@@ -13,7 +13,7 @@ namespace GettingReal
         string openingHour = "11:00";
         string closingHour = "18:00";
         private static string connectionString = "Server=ealdb1.eal.local;Database=EJL67_DB;User ID=ejl67_usr;Password=Baz1nga67";
-
+        // using DBcontroller.GetConnection() method instead in the whole UI class
         static void Main(string[] args)
         {
             UI myProgram = new UI();
@@ -144,7 +144,6 @@ namespace GettingReal
             {
                 Console.Write("Start time (hh:mm): ");
                 startTime = Console.ReadLine();
-
             } while (CheckHours(startTime) == false || CheckMinutes(startTime) == false);
             do
             {
@@ -317,7 +316,6 @@ namespace GettingReal
 
                         Console.WriteLine("Customer : " + cuRepo.Load(customerPhone).FirstName + " " + cuRepo.Load(customerPhone).LastName);
                         ShowAppointInfo(appointmentDate.ToString("dd-MM-yyyy"), appointmentStartTime, appointmentEndTime, appointmentNotes, customerPhone);
-
                     }
                     Console.ReadKey();
                 }
@@ -382,7 +380,7 @@ namespace GettingReal
 
                 SqlDataReader reader = cmdShowAvailableTimeByDate.ExecuteReader();
                 List<Appointment> listOfAvailableTime = new List<Appointment>();
-
+                
                 if (reader.HasRows)
                 {
                     while (reader.Read())
@@ -538,6 +536,7 @@ namespace GettingReal
                         Console.Clear();
                     }
                 } while (converted == false);
+
                 ShowAvailableTime(date);
                 Console.ReadKey();
                 do
@@ -585,7 +584,6 @@ namespace GettingReal
             } while (converted == false);
 
             string phoneInput = TakingPhoneNumber();
-            //Console.Clear();
 
             DB.DeleteAppointment(phoneInput, date);
             Console.WriteLine("The appointment was deleted from the system!");
