@@ -33,7 +33,7 @@ namespace GettingReal
             Console.WriteLine("3) Search customers by phone number");
             Console.WriteLine("4) Make new appointment");
             Console.WriteLine("5) Show all appointments");
-            Console.WriteLine("6) Show available time");
+            Console.WriteLine("6) Show available times");
             Console.WriteLine("7) Change the appointment");
             Console.WriteLine("8) Show all appointments of a customer");
             Console.WriteLine("9) Delete an appointment of a customer");
@@ -88,11 +88,6 @@ namespace GettingReal
                     case 10:
                         ShowAppointmentsForASpecificDay();
                         break;
-
-                    /* case 7: SearchByLastName(); break;
-                     case 9:
-                         Customers(); break;
-                         */
                     case 11:
                         isRunning = false;
                         break;
@@ -120,7 +115,7 @@ namespace GettingReal
             customer.Phone = Customer.SplitPhoneNumber(phone);
 
             DB.InsertCustomer(customer);
-            Console.WriteLine("Done!");
+            Console.WriteLine("The customer was added to the system!");
             Console.ReadKey();
         }
 
@@ -176,6 +171,7 @@ namespace GettingReal
             Customer customer = cuRepo.Load(phone);
             Appointment appointment = new Appointment(date, startTime, endTime, notes, customer);
             DB.InsertAppointment(appointment);
+            Console.WriteLine("The appointment was made!");
             Console.ReadKey();
         }
         public string InputCustomer(string parameter)
@@ -396,8 +392,6 @@ namespace GettingReal
                         Appointment appointment = new Appointment(date, appointmentStartTime, appointmentEndTime, "", new Customer());
                         listOfAvailableTime.Add(appointment);
                     }
-                    string openingHour = "11:00";
-                    string closingHour = "18:00";
 
                     Console.WriteLine();
                     Console.WriteLine("The available time frames you can choose from:");
@@ -434,27 +428,8 @@ namespace GettingReal
                 con.Open();
                 SqlCommand cmdShowCustomerByPhone = new SqlCommand("SHOW_CUSTOMER_BY_PHONE", con);
                 cmdShowCustomerByPhone.CommandType = CommandType.StoredProcedure;
-                string phoneInput = "";
-                bool inputCorrect = true;
-                do
-                {
-                    inputCorrect = false;
-                    Console.Clear();
 
-                    Console.WriteLine("(Press x if you want to exit.)");
-                    Console.WriteLine();
-                    Console.Write("Customer's phone number to search for: ");
-                    phoneInput = Console.ReadLine();
-                    if (phoneInput.ToLower() != "x")
-                    {
-                        inputCorrect = PhoneNumberChecking(phoneInput);
-                    }
-                    else
-                    {
-                        inputCorrect = true;
-                    }
-                } while (inputCorrect == false);
-                Console.Clear();
+                string phoneInput = TakingPhoneNumber();
 
                 cmdShowCustomerByPhone.Parameters.Add(new SqlParameter("@PHONE_NUMBER", Customer.SplitPhoneNumber(phoneInput)));
 
@@ -482,28 +457,8 @@ namespace GettingReal
                 con.Open();
                 SqlCommand cmdShowAppointmentByPhone = new SqlCommand("SHOW_APPOINTMENT_BY_PHONE", con);
                 cmdShowAppointmentByPhone.CommandType = CommandType.StoredProcedure;
-                string phoneInput = "";
-                bool inputCorrect = true;
-                do
-                {
-                    inputCorrect = false;
-                    Console.Clear();
 
-                    Console.WriteLine("(Press x if you want to exit.)");
-                    Console.WriteLine();
-                    Console.Write("Customer's phone number to search for appointments: ");
-                    phoneInput = Console.ReadLine();
-                    if (phoneInput.ToLower() != "x")
-                    {
-                        inputCorrect = PhoneNumberChecking(phoneInput);
-                    }
-                    else
-                    {
-                        inputCorrect = true;
-                    }
-                } while (inputCorrect == false);
-                Console.Clear();
-
+                string phoneInput = TakingPhoneNumber();
                 cmdShowAppointmentByPhone.Parameters.Add(new SqlParameter("@PHONE_NUMBER", Customer.SplitPhoneNumber(phoneInput)));
 
                 SqlDataReader reader = cmdShowAppointmentByPhone.ExecuteReader();
@@ -520,11 +475,36 @@ namespace GettingReal
 
                         Console.WriteLine("Customer : " + cuRepo.Load(customerPhone).FirstName + " " + cuRepo.Load(customerPhone).LastName);
                         ShowAppointInfo(appointmentDate.ToString("dd-MM-yyyy"), appointmentStartTime, appointmentEndTime, appointmentNotes, customerPhone);
-
                     }
                     Console.ReadKey();
                 }
             }
+        }
+
+        private string TakingPhoneNumber()
+        {
+            string phoneInput = "";
+            bool inputCorrect = true;
+            do
+            {
+                inputCorrect = false;
+                Console.Clear();
+
+                Console.WriteLine("(Press x if you want to exit.)");
+                Console.WriteLine();
+                Console.Write("Customer's phone number to search for appointments: ");
+                phoneInput = Console.ReadLine();
+                if (phoneInput.ToLower() != "x")
+                {
+                    inputCorrect = PhoneNumberChecking(phoneInput);
+                }
+                else
+                {
+                    inputCorrect = true;
+                }
+            } while (inputCorrect == false);
+            Console.Clear();
+            return phoneInput;
         }
 
         private void ChangeAppointmentDateTime()
@@ -536,7 +516,7 @@ namespace GettingReal
                 cmdChangeAppointmentByPhone.CommandType = CommandType.StoredProcedure;
 
                 SearchAppointmentByCustomerPhone();
-                //Console.Clear();
+                
                 string startTime = "";
                 string endTime = "";
                 string phoneNum = "";
@@ -544,7 +524,7 @@ namespace GettingReal
                 bool converted = false;
                 DateTime date;
                 DBcontroler DB = new DBcontroler();
-                Console.Write("Choose the date you want to change:");
+                Console.Write("Choose the date you want to change (dd-mm-yyyy): ");
                 oldDate = Convert.ToDateTime(Console.ReadLine());
                 do
                 {
@@ -559,7 +539,7 @@ namespace GettingReal
                     }
                 } while (converted == false);
                 ShowAvailableTime(date);
-
+                Console.ReadKey();
                 do
                 {
                     Console.Write("New start time for the appointment (hh:mm): ");
@@ -571,6 +551,7 @@ namespace GettingReal
                     Console.Write("New end time for the appointment (hh:mm): ");
                     endTime = Console.ReadLine();
                 } while (CheckHours(endTime) == false || CheckMinutes(endTime) == false);
+
                 do
                 {
                     Console.Write("Confirm customer's phone number : ");
@@ -587,8 +568,6 @@ namespace GettingReal
         private void DeleteAppointment()
         {
             bool converted = false;
-            string phoneInput = "";
-            bool inputCorrect = true;
             DateTime date;
             DBcontroler DB = new DBcontroler();
 
@@ -604,27 +583,13 @@ namespace GettingReal
                     Console.Clear();
                 }
             } while (converted == false);
-            do
-            {
-                inputCorrect = false;
-                Console.Clear();
 
-                Console.WriteLine("(Press x if you want to exit.)");
-                Console.WriteLine();
-                Console.Write("Customer's phone number for the appointment: ");
-                phoneInput = Console.ReadLine();
-                if (phoneInput.ToLower() != "x")
-                {
-                    inputCorrect = PhoneNumberChecking(phoneInput);
-                }
-                else
-                {
-                    inputCorrect = true;
-                }
-            } while (inputCorrect == false);
-            Console.Clear();
+            string phoneInput = TakingPhoneNumber();
+            //Console.Clear();
 
             DB.DeleteAppointment(phoneInput, date);
+            Console.WriteLine("The appointment was deleted from the system!");
+            Console.ReadKey();
         }
 
         public bool PhoneNumberChecking(string phone)
@@ -633,7 +598,6 @@ namespace GettingReal
             if (Customer.CheckPhoneNumberFormat(phone) == false || Customer.CheckPhoneNumberForSomethingDifferentThanDigits(phone) == false)
             {
                 Error();
-                //Console.WriteLine(phone);
                 inputCorrect = false;
             }
 

@@ -8,7 +8,7 @@ namespace GettingReal_Source_Code
 {
     public class DBcontroler
     {
-        public SqlConnection getConnection()
+        public SqlConnection GetConnection()
         {
             SqlConnection conn = new SqlConnection("Server=ealdb1.eal.local;Database=EJL67_DB;User ID=ejl67_usr;Password=Baz1nga67");
             conn.Open();
@@ -16,7 +16,7 @@ namespace GettingReal_Source_Code
         }
         public void InsertCustomer(Customer customer)
         {
-            SqlConnection conn = getConnection();
+            SqlConnection conn = GetConnection();
             try
             {
                 SqlCommand command = new SqlCommand("SP_INSERT_CUSTOMER", conn);
@@ -40,7 +40,7 @@ namespace GettingReal_Source_Code
 
         public void InsertAppointment(Appointment appointment)
         {
-            SqlConnection conn = getConnection();
+            SqlConnection conn = GetConnection();
             try
             {
                 SqlCommand command = new SqlCommand("SP_INSERT_APPOINTMENT", conn);
@@ -51,7 +51,6 @@ namespace GettingReal_Source_Code
                 command.Parameters.Add(new SqlParameter("@NOTES", appointment.Notes));
                 command.Parameters.Add(new SqlParameter("@PHONE_NUMBER", appointment.Customer.Phone));
                 command.ExecuteNonQuery();
-                Console.WriteLine("The customer was added to the system!");
             }
             catch (SqlException e)
             {
@@ -69,19 +68,17 @@ namespace GettingReal_Source_Code
 
         public void ChangeAppointment(string phone, DateTime date, string startTime, string endTime, DateTime oldDate)
         {
-            SqlConnection conn = getConnection();
+            SqlConnection conn = GetConnection();
             try
             {
                 SqlCommand command = new SqlCommand("SP_CHANGE_APPOINTMENT_DATE_AND_TIME", conn);
                 command.CommandType = CommandType.StoredProcedure;
-                //command.Parameters.Add(new SqlParameter("@PHONE_NUMBER", Customer.SplitPhoneNumber(phone)));
                 command.Parameters.Add(new SqlParameter("@APPOINTMENT_DATE", date));
                 command.Parameters.Add(new SqlParameter("@START_TIME", startTime));
                 command.Parameters.Add(new SqlParameter("@END_TIME", endTime));
                 command.Parameters.Add(new SqlParameter("@APPOINTMENT_DATE_OLD", oldDate));
                 command.Parameters.Add(new SqlParameter("@PHONE_NUMBER", Customer.SplitPhoneNumber(phone)));
                 command.ExecuteNonQuery();
-                Console.WriteLine("The appointment was changed!");
             }
             catch (SqlException e)
             {
@@ -97,7 +94,7 @@ namespace GettingReal_Source_Code
 
         public void DeleteAppointment(string phone, DateTime date)
         {
-            SqlConnection conn = getConnection();
+            SqlConnection conn = GetConnection();
             try
             {
                 SqlCommand command = new SqlCommand("SP_DELETE_APPOINTMENT_BY_DATE_AND_PHONE", conn);
@@ -105,8 +102,6 @@ namespace GettingReal_Source_Code
                 command.Parameters.Add(new SqlParameter("@PHONE_NUMBER", Customer.SplitPhoneNumber(phone)));
                 command.Parameters.Add(new SqlParameter("@APPOINTMENT_DATE", date));
                 command.ExecuteNonQuery();
-                Console.WriteLine("The appointment was deleted from the system!");
-                Console.ReadKey();
             }
             catch (SqlException e)
             {
@@ -123,7 +118,7 @@ namespace GettingReal_Source_Code
         public List<string> GetPhonesFromDB()
         {
             List<string> listofPhonesFromDB = new List<string>();
-            using (SqlConnection conn = getConnection())
+            using (SqlConnection conn = GetConnection())
             {
 
                 using (SqlCommand phoneFromDbToList = new SqlCommand("SELECT PHONE_NUMBER FROM CUSTOMER", conn))

@@ -4,28 +4,28 @@ namespace GettingReal_Source_Code
 {
     public class CustomerRepository
     {
-        Dictionary<string, Customer> listofCustomers = new Dictionary<string, Customer>();
+        Dictionary<string, Customer> listOfCustomers = new Dictionary<string, Customer>();
         public void Clear()
         {
-            listofCustomers.Clear();
+            listOfCustomers.Clear();
         }
         public int CountCustomers()
         {
-            int numberOfCustomers = listofCustomers.Count;
+            int numberOfCustomers = listOfCustomers.Count;
             return numberOfCustomers;
         }
         public Customer Create(string firstName, string lastName, string phone)
         {
             Customer customer = new Customer(firstName, lastName, phone);
-            listofCustomers.Add(phone, customer);
+            listOfCustomers.Add(phone, customer);
             return customer;
         }
 
         public Customer Load(string phone)
         {
-            if (listofCustomers.ContainsKey(phone))
+            if (listOfCustomers.ContainsKey(phone))
             {
-                return listofCustomers[phone];
+                return listOfCustomers[phone];
             }
             else
             {
@@ -35,7 +35,7 @@ namespace GettingReal_Source_Code
 
         public void Delete(string phone)
         {
-            listofCustomers.Remove(phone);
+            listOfCustomers.Remove(phone);
         }
 
         public bool RegisterCustomer(string firstName, string lastName, string phone)
